@@ -1188,7 +1188,6 @@ a:focus {color:blue !important}</style>
     </html>"""
 
     p = Premailer(html,
-                  keep_style_tags=True,
                   strip_important=False)
     result_html = p.transform()
 
@@ -1383,6 +1382,43 @@ def test_external_styles_and_links():
         strip_important=False,
         external_styles=['test-external-styles.css'],
         base_path='premailer/')
+    result_html = p.transform()
+
+    expect_html = whitespace_between_tags.sub('><', expect_html).strip()
+    result_html = whitespace_between_tags.sub('><', result_html).strip()
+
+    eq_(expect_html, result_html)
+
+
+def test_keep_style_tags():
+    if not etree:
+        # can't test it
+        return
+
+    html = """<html>
+    <head>
+    <style type="text/css">
+    h1 { color: red; }
+    </style>
+    </head>
+    <body>
+    <h1>Hello</h1>
+    </body>
+    </html>"""
+
+    expect_html = """<html>
+    <head>
+    <style type="text/css">
+    h1 { color: red; }
+    </style>
+    </head>
+    <body>
+    <h1 style="color:red">Hello</h1>
+    </body>
+    </html>"""
+
+    p = Premailer(html,
+        keep_style_tags=True)
     result_html = p.transform()
 
     expect_html = whitespace_between_tags.sub('><', expect_html).strip()

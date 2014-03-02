@@ -210,7 +210,7 @@ class Premailer(object):
             rules.extend(these_rules)
 
             parent_of_element = element.getparent()
-            if these_leftover:
+            if not self.keep_style_tags and these_leftover:
                 if is_style:
                     style = element
                 else:
