@@ -107,7 +107,8 @@ class Premailer(object):
                  strip_important=True,
                  external_styles=None,
                  method="html",
-                 base_path=None):
+                 base_path=None,
+                 add_basic_html_attributes=True):
         self.html = html
         self.base_url = base_url
         self.preserve_internal_links = preserve_internal_links
@@ -123,6 +124,7 @@ class Premailer(object):
         self.strip_important = strip_important
         self.method = method
         self.base_path = base_path
+        self.add_basic_html_attributes = add_basic_html_attributes
 
     def _parse_style_rules(self, css_body, ruleset_index):
         leftover = []
@@ -264,8 +266,9 @@ class Premailer(object):
                 else:
                     new_style = merge_styles(old_style, style, class_)
                 item.attrib['style'] = new_style
-                self._style_to_basic_html_attributes(item, new_style,
-                                                     force=True)
+                if self.add_basic_html_attributes:
+                    self._style_to_basic_html_attributes(item, new_style,
+                                                        force=True)
 
         # Re-apply initial inline styles.
         for item, inline_style in first_time_styles:
@@ -274,7 +277,8 @@ class Premailer(object):
                 continue
             new_style = merge_styles(old_style, inline_style, class_)
             item.attrib['style'] = new_style
-            self._style_to_basic_html_attributes(item, new_style, force=True)
+            if self.add_basic_html_attributes:
+                self._style_to_basic_html_attributes(item, new_style, force=True)
 
         if self.remove_classes:
             # now we can delete all 'class' attributes
